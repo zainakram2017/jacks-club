@@ -1,15 +1,10 @@
-import { DynamoDB } from 'aws-sdk';
+
 import { v4 as uuidv4 } from 'uuid';
 
 import { User } from '../models/user';
 import { createBalance } from './balance';
-import secrets from '../constants/index';
 
-const dynamoDB = new DynamoDB.DocumentClient({
-    region: secrets.AWS_REGION,
-    accessKeyId: secrets.credentials.accessKeyId,
-    secretAccessKey: secrets.credentials.secretAccessKey
-});
+import { dynamoDB } from '../constants/db';
 
 export async function createUser(user: User): Promise<User> {
     const uuid = uuidv4();

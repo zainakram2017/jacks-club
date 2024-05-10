@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
 
-import { processTransaction, getTransaction, getAllTransactions } from '../services/transaction';
+import { processTransaction, getTransaction, getAllTransactions, getTransactionByUserUuidAndIdempotentKey } from '../services/transaction';
 import { Transaction } from '../models/transaction';
 import { getUser } from '../services/user';
 
@@ -19,6 +19,13 @@ export async function processTransactionHandler(event: APIGatewayProxyEvent): Pr
             return {
                 statusCode: 404,
                 body: JSON.stringify({ message: 'User not found' })
+            };
+        }
+        const existingTransaction = await getTransactionByUserUuidAndIdempotentKey(userUuid, idempotentKey);
+        if(existingTransaction) {
+            return {
+                statusCode: 409,
+                body: JSON.stringify({ message: 'Transaction already exists' })
             };
         }
         const transaction: Transaction = { transactionUuid: uuidv4(), idempotentKey, userUuid, amount: parseFloat(amount), type };

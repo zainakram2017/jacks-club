@@ -1,5 +1,3 @@
-// src/controllers/user.ts
-
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { createUser, getUser, updateUser, deleteUser, getUsers } from '../services/user';
 import { User } from '../models/user';
@@ -57,6 +55,13 @@ export async function updateUserHandler(event: APIGatewayProxyEvent): Promise<AP
             return {
                 statusCode: 400,
                 body: JSON.stringify({ message: 'User Uuid is required' }),
+            };
+        }
+        const user = await getUser(userUuid);
+        if (!user) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ message: 'User not found' }),
             };
         }
         const userData: User = JSON.parse(event.body || '{}');

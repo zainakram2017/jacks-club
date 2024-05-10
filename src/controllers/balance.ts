@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getBalance, updateBalance } from '../services/balance';
-import { Balance } from '../models/balance';
+import { getUser } from '../services/user';
 
 export async function getBalanceHandler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     try {
@@ -51,6 +51,13 @@ export async function updateBalanceHandler(event: APIGatewayProxyEvent): Promise
             return {
                 statusCode: 400,
                 body: JSON.stringify({ message: 'Amount cannot be negative' })
+            };
+        }
+        const user = await getUser(userUuid);
+        if (!user) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ message: 'User does not exist' })
             };
         }
         await updateBalance(userUuid, amount);
