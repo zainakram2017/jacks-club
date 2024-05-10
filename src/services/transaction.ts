@@ -22,16 +22,16 @@ export async function processTransaction(transaction: Transaction): Promise<void
             TableName: 'Transactions',
             Item: transaction
         };
-        await dynamoDB.put(transactionParams).promise();
-
+        
         const balance = await getBalance(transaction.userUuid);
-
+        
         if (balance && (balance.amount + amount < 0)) {
-            throw new Error('Insufficient balance');
+            throw 'Insufficient balance';
         } else if (balance) {
+            await dynamoDB.put(transactionParams).promise();
             await updateBalance(transaction.userUuid, amount + balance.amount);
         }
-
+        
     } catch (error) {
         if (error === 'ConditionalCheckFailedException') {
             console.error('Lock acquisition failed:', lockKey);

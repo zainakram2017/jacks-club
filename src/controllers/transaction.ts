@@ -37,8 +37,8 @@ export async function processTransactionHandler(event: APIGatewayProxyEvent): Pr
     } catch (error) {
         console.error('Error processing transaction:', error);
         return {
-            statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' })
+            statusCode: 400,
+            body: JSON.stringify({ message: error })
         };
     }
 }
@@ -68,7 +68,7 @@ export async function getTransactionHandler(event: APIGatewayProxyEvent): Promis
         console.error('Error getting transaction:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' })
+            body: JSON.stringify({ message: error })
         };
     }
 }
@@ -85,7 +85,7 @@ export async function getAllTransactionsHandler(): Promise<APIGatewayProxyResult
         console.error('Error getting transactions:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' })
+            body: JSON.stringify({ message: error })
         };
     }
 }

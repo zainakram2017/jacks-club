@@ -14,7 +14,7 @@ export async function createUserHandler(event: APIGatewayProxyEvent): Promise<AP
         console.error('Error creating user:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' }),
+            body: JSON.stringify({ message: error }),
         };
     }
 }
@@ -43,7 +43,7 @@ export async function getUserHandler(event: APIGatewayProxyEvent): Promise<APIGa
         console.error('Error getting user:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' }),
+            body: JSON.stringify({ message: error }),
         };
     }
 }
@@ -81,7 +81,7 @@ export async function updateUserHandler(event: APIGatewayProxyEvent): Promise<AP
         console.error('Error updating user:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' }),
+            body: JSON.stringify({ message: error }),
         };
     }
 }
@@ -112,7 +112,7 @@ export async function deleteUserHandler(event: APIGatewayProxyEvent): Promise<AP
         console.error('Error deleting user:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' }),
+            body: JSON.stringify({ message: error }),
         };
     }
 }
@@ -128,7 +128,7 @@ export async function getUsersHandler(): Promise<APIGatewayProxyResult> {
         console.error('Error getting users:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' }),
+            body: JSON.stringify({ message: error }),
         };
     }
 }

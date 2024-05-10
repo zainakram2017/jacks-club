@@ -23,10 +23,9 @@ export async function getBalanceHandler(event: APIGatewayProxyEvent): Promise<AP
             body: JSON.stringify(balance)
         };
     } catch (error) {
-        console.error('Error getting balance:', error);
         return {
-            statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' })
+            statusCode: 400,
+            body: JSON.stringify({ message: error })
         };
     }
 }
@@ -61,7 +60,6 @@ export async function updateBalanceHandler(event: APIGatewayProxyEvent): Promise
             };
         }
         await updateBalance(userUuid, amount);
-        console.log('Updated')
         return {
             statusCode: 200,
             body: JSON.stringify({ message: 'Balance updated successfully' })
@@ -70,7 +68,7 @@ export async function updateBalanceHandler(event: APIGatewayProxyEvent): Promise
         console.error('Error updating balance:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' })
+            body: JSON.stringify({ message: error })
         };
     }
 }
