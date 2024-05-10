@@ -4,11 +4,11 @@ import { getUser } from '../services/user';
 
 export async function getBalanceHandler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     try {
-        const userUuid = event.pathParameters?.userUuid;
+        const { userUuid } = JSON.parse(event.body || '{}');
         if (!userUuid) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'User ID is required' })
+                body: JSON.stringify({ message: 'User UUID is required' })
             };
         }
         const balance = await getBalance(userUuid);
@@ -36,7 +36,7 @@ export async function updateBalanceHandler(event: APIGatewayProxyEvent): Promise
         if (!userUuid) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'User ID is required' })
+                body: JSON.stringify({ message: 'User UUID is required' })
             };
         }
         const { amount } = JSON.parse(event.body || '{}');

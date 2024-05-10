@@ -55,8 +55,8 @@ functions:
     handler: src/controllers/balance.getBalanceHandler
     events:
       - http:
-          path: balance/{userUuid}
-          method: get
+          path: balance
+          method: post
           cors: true
 
   updateBalance:

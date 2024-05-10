@@ -17,7 +17,7 @@ export async function createUser(user: User): Promise<User> {
 
     try {
         await dynamoDB.put(params).promise();
-        await createBalance({ userUuid: uuid, amount: 0 });
+        await createBalance({ userUuid: uuid, amount: 100 });
         return user;
     } catch (error) {
         console.error('Error creating user:', error);
