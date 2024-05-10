@@ -68,7 +68,7 @@ functions:
           cors: true
 
   processTransaction:
-    handler: src/controllers/transaction.processTransaction
+    handler: src/controllers/transaction.processTransactionHandler
     events:
       - http:
           path: transaction
@@ -76,15 +76,15 @@ functions:
           cors: true
 
   getTransaction:
-    handler: src/controllers/transaction.getTransaction
+    handler: src/controllers/transaction.getTransactionHandler
     events:
       - http:
           path: transaction/{transactionUuid}
           method: get
           cors: true
 
-  getTransactions:
-    handler: src/controllers/transaction.getTransactions
+  getAllTransactions:
+    handler: src/controllers/transaction.getAllTransactionsHandler
     events:
       - http:
           path: transaction
@@ -135,6 +135,20 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
 
+    LocksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Locks
+        AttributeDefinitions:
+          - AttributeName: lockKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: lockKey
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+          
 plugins:
   - serverless-offline
   - serverless-plugin-typescript
