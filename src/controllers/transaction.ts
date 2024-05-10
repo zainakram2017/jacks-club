@@ -8,10 +8,10 @@ import { getUser } from '../services/user';
 export async function processTransactionHandler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
     try {
         const { idempotentKey, userUuid, amount, type } = JSON.parse(event.body || '{}');
-        if (!idempotentKey || !userUuid || !amount || !type) {
+        if (!idempotentKey || !userUuid || !amount || !type || (type !== 'credit' && type !== 'debit')) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Missing required parameters' })
+                body: JSON.stringify({ message: 'Missing or invalid required parameters' })
             };
         }
         const user = await getUser(userUuid);

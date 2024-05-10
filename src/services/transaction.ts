@@ -1,57 +1,47 @@
 import { Transaction } from '../models/transaction';
-import { getBalance, updateBalance } from './balance';
-
+// import { getBalance, updateBalance } from './balance';
 import { dynamoDB } from '../constants/db';
 
 export async function processTransaction(transaction: Transaction): Promise<void> {
     const amount = transaction.type === 'credit' ? transaction.amount : -transaction.amount;
-    const lockKey = `balance-lock-${transaction.userUuid}`;
+
+    const transactionParams = {
+        TransactItems: [
+            {
+                Put: {
+                    TableName: 'Transactions',
+                    Item: transaction
+                }
+            },
+            {
+                Update: {
+                    TableName: 'Balances',
+                    Key: { userUuid: transaction.userUuid },
+                    UpdateExpression: 'set amount = if_not_exists(amount, :zero) + :amount',
+                    ExpressionAttributeValues: {
+                        ':amount': amount,
+                        ':zero': 0,
+                        ':negAmount': -amount
+                    },
+                    ConditionExpression: 'attribute_exists(userUuid) AND (attribute_not_exists(amount) OR amount >= :negAmount)'
+                }
+            }
+        ]
+    };
 
     try {
-        const lockParams = {
-            TableName: 'Locks',
-            Item: {
-                lockKey,
-                expirationTime: Math.floor(Date.now() / 1000) + 60
-            },
-            ConditionExpression: 'attribute_not_exists(lockKey)'
-        };
-        await dynamoDB.put(lockParams).promise();
-
-        const transactionParams = {
-            TableName: 'Transactions',
-            Item: transaction
-        };
-        
-        const balance = await getBalance(transaction.userUuid);
-        
-        if (balance && (balance.amount + amount < 0)) {
-            throw 'Insufficient balance';
-        } else if (balance) {
-            await dynamoDB.put(transactionParams).promise();
-            await updateBalance(transaction.userUuid, amount + balance.amount);
-        }
-        
+        const result = await dynamoDB.transactWrite(transactionParams).promise();
+        console.log('Transaction successful:', result);
     } catch (error) {
-        if (error === 'ConditionalCheckFailedException') {
-            console.error('Lock acquisition failed:', lockKey);
-        } else {
-            console.error('Error processing transaction:', error);
-        }
-        throw error;
-    } finally {
-        const releaseParams = {
-            TableName: 'Locks',
-            Key: { lockKey }
-        };
-        await dynamoDB.delete(releaseParams).promise();
+        console.error('Error processing transaction:', error);
+        throw 'Insufficient balance';
     }
 }
 
 export async function getTransaction(transactionUuid: string): Promise<Transaction> {
     const params = {
         TableName: 'Transactions',
-        Key: { transactionUuid: transactionUuid, }
+        Key: { transactionUuid: transactionUuid }
     };
     const result = await dynamoDB.get(params).promise();
     return result.Item as Transaction;
