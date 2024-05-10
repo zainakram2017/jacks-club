@@ -2,9 +2,14 @@ import { DynamoDB } from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
 import { User } from '../models/user';
+import { createBalance } from './balance';
 import secrets from '../constants/index';
 
-const dynamoDB = new DynamoDB.DocumentClient();
+const dynamoDB = new DynamoDB.DocumentClient({
+    region: secrets.AWS_REGION,
+    accessKeyId: secrets.credentials.accessKeyId,
+    secretAccessKey: secrets.credentials.secretAccessKey
+});
 
 export async function createUser(user: User): Promise<User> {
     const uuid = uuidv4();
@@ -17,6 +22,7 @@ export async function createUser(user: User): Promise<User> {
 
     try {
         await dynamoDB.put(params).promise();
+        await createBalance({ userUuid: uuid, amount: 0 });
         return user;
     } catch (error) {
         console.error('Error creating user:', error);

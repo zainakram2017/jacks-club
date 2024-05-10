@@ -52,35 +52,19 @@ functions:
           cors: true
 
   getBalance:
-    handler: src/controllers/balance.getBalance
+    handler: src/controllers/balance.getBalanceHandler
     events:
       - http:
           path: balance/{userUuid}
           method: get
           cors: true
 
-  createBalance:
-    handler: src/controllers/balance.createBalance
-    events:
-      - http:
-          path: balance
-          method: post
-          cors: true
-
   updateBalance:
-    handler: src/controllers/balance.updateBalance
+    handler: src/controllers/balance.updateBalanceHandler
     events:
       - http:
           path: balance/{userUuid}
           method: put
-          cors: true
-
-  deleteBalance:
-    handler: src/controllers/balance.deleteBalance
-    events:
-      - http:
-          path: balance/{userUuid}
-          method: delete
           cors: true
 
   processTransaction:
@@ -99,20 +83,12 @@ functions:
           method: get
           cors: true
 
-  updateTransaction:
-    handler: src/controllers/transaction.updateTransaction
+  getTransactions:
+    handler: src/controllers/transaction.getTransactions
     events:
       - http:
-          path: transaction/{transactionUuid}
-          method: put
-          cors: true
-
-  deleteTransaction:
-    handler: src/controllers/transaction.deleteTransaction
-    events:
-      - http:
-          path: transaction/{transactionUuid}
-          method: delete
+          path: transaction
+          method: get
           cors: true
 
 resources:
