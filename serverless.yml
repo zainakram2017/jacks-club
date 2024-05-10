@@ -1,0 +1,164 @@
+service: jacks-club-service
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:*
+      Resource: "arn:aws:dynamodb:us-east-1:891377034411:table/*"
+
+functions:
+  createUser:
+    handler: src/controllers/user.createUserHandler
+    events:
+      - http:
+          path: user
+          method: post
+          cors: true
+
+  getUsers:
+    handler: src/controllers/user.getUsersHandler
+    events:
+      - http:
+          path: user
+          method: get
+          cors: true
+
+  getUser:
+    handler: src/controllers/user.getUserHandler
+    events:
+      - http:
+          path: user/{userUuid}
+          method: get
+          cors: true
+
+  updateUser:
+    handler: src/controllers/user.updateUserHandler
+    events:
+      - http:
+          path: user/{userUuid}
+          method: put
+          cors: true
+
+  deleteUser:
+    handler: src/controllers/user.deleteUserHandler
+    events:
+      - http:
+          path: user/{userUuid}
+          method: delete
+          cors: true
+
+  getBalance:
+    handler: src/controllers/balance.getBalance
+    events:
+      - http:
+          path: balance/{userUuid}
+          method: get
+          cors: true
+
+  createBalance:
+    handler: src/controllers/balance.createBalance
+    events:
+      - http:
+          path: balance
+          method: post
+          cors: true
+
+  updateBalance:
+    handler: src/controllers/balance.updateBalance
+    events:
+      - http:
+          path: balance/{userUuid}
+          method: put
+          cors: true
+
+  deleteBalance:
+    handler: src/controllers/balance.deleteBalance
+    events:
+      - http:
+          path: balance/{userUuid}
+          method: delete
+          cors: true
+
+  processTransaction:
+    handler: src/controllers/transaction.processTransaction
+    events:
+      - http:
+          path: transaction
+          method: post
+          cors: true
+
+  getTransaction:
+    handler: src/controllers/transaction.getTransaction
+    events:
+      - http:
+          path: transaction/{transactionUuid}
+          method: get
+          cors: true
+
+  updateTransaction:
+    handler: src/controllers/transaction.updateTransaction
+    events:
+      - http:
+          path: transaction/{transactionUuid}
+          method: put
+          cors: true
+
+  deleteTransaction:
+    handler: src/controllers/transaction.deleteTransaction
+    events:
+      - http:
+          path: transaction/{transactionUuid}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Users
+        AttributeDefinitions:
+          - AttributeName: userUuid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userUuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    BalancesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Balances
+        AttributeDefinitions:
+          - AttributeName: userUuid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userUuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    TransactionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Transactions
+        AttributeDefinitions:
+          - AttributeName: transactionUuid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: transactionUuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
